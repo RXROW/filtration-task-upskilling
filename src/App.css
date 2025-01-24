@@ -47,7 +47,7 @@
 .hero-container::after {
   content: "";
   position: absolute;
-  top: 0;
+  top: -2%;
   right: 10%;
   background-color: #fff;
   width: 40%;
