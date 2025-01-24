@@ -1,81 +1,88 @@
 import React, { useState } from "react";
+import { Formik, Field, Form, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
+
+
+const validationSchema = Yup.object({
+  name: Yup.string().required("Name is required."),
+  email: Yup.string().email("Invalid email format").required("Email is required."),
+  phone: Yup.string().matches(
+    /^[0-9]{11}$/,
+    "Phone number must be 11 digits"
+  ).required("Phone number is required."),
+});
+
 const ContactForm = () => {
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  }; 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+
+  const handleSubmit = async (values, { resetForm }) => {
     setLoading(true);
     setMessage("");
     setError("");
-    if (!formData.name || !formData.email || !formData.phone) {
-      setError("All fields are required.");
-      setLoading(false);
-      return;
-    }
 
     try {
-      const response = await fetch("https://reqres.in/api/users", { // this free api to test this api (http://upskilling-egypt.com:3001/contact) not work 
-        method: "POST",
+      // I use this api becuase this api (http://upskilling-egypt.com:3001/contact) not work 
+      const response = await axios.post("https://reqres.in/api/users", values, {
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
       });
-      if (response.ok) {
-        const data = await response.json();
-        setMessage(`Success! User ${data.id} added.`);
-        setFormData({ name: "", email: "", phone: "" });  
-      } else {
-        setError("Failed to send message. Try again.");
-      }
-    } catch (error) {
-      setError("Error sending message. Check your connection.");
+
+      setMessage(`Success! User ${response.data.id} added.`);
+      resetForm();
+    } catch (err) {
+      setError("Failed to send message. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
   return (
-    <form className="flex flex-col space-y-4 p-4 border rounded-lg" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        placeholder="Name"
-        required
-        className="p-3 rounded-full bg-[#CEDCFF] focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
-      <input
-        type="email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        placeholder="Email"
-        required
-        className="p-3 rounded-full bg-[#CEDCFF] focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
-      <input
-        type="tel"
-        name="phone"
-        value={formData.phone}
-        onChange={handleChange}
-        placeholder="Phone"
-        required
-        className="p-3 rounded-full bg-[#CEDCFF] focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
-      <button
-        type="submit"
-        className="mt-3 w-fit mx-auto border border-blue-500 text-blue-500 rounded-full py-2 px-6 transition hover:bg-blue-500 hover:text-white"
-        disabled={loading}
-      >
-        {loading ? "Sending..." : "Send"}
-      </button>
-      {message && <p className="text-center text-green-600">{message}</p>}
-      {error && <p className="text-center text-red-600">{error}</p>}
-    </form>
+    <Formik
+      initialValues={{ name: "", email: "", phone: "" }}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+    >
+      {({ isSubmitting }) => (
+        <Form className="flex flex-col space-y-4 p-4 border rounded-lg">
+          <Field
+            type="text"
+            name="name"
+            placeholder="Name"
+            className="p-3 rounded-full bg-[#CEDCFF] focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <ErrorMessage name="name" component="div" className="text-red-600 text-sm" />
+
+          <Field
+            type="email"
+            name="email"
+            placeholder="Email"
+            className="p-3 rounded-full bg-[#CEDCFF] focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <ErrorMessage name="email" component="div" className="text-red-600 text-sm" />
+
+          <Field
+            type="tel"
+            name="phone"
+            placeholder="Phone"
+            className="p-3 rounded-full bg-[#CEDCFF] focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <ErrorMessage name="phone" component="div" className="text-red-600 text-sm" />
+
+          <button
+            type="submit"
+            className="mt-3 w-fit mx-auto border border-blue-500 text-blue-500 rounded-full py-2 px-6 transition hover:bg-blue-500 hover:text-white"
+            disabled={isSubmitting || loading}
+          >
+            {loading ? "Sending..." : "Send"}
+          </button>
+
+          {message && <p className="text-center text-green-600">{message}</p>}
+          {error && <p className="text-center text-red-600">{error}</p>}
+        </Form>
+      )}
+    </Formik>
   );
 };
 

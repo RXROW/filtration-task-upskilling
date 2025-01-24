@@ -2,37 +2,21 @@
  
  Input::placeholder {
   color: black;  
- 
   font-size: 16px;  
   opacity: 1;  
 }
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-/* Width and height */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
-
-/* Track (background) */
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 10px;
 }
-
-/* Thumb (scrolling part) */
 ::-webkit-scrollbar-thumb {
   background: #007bff;
   border-radius: 10px;
 }
-
-/* Hover effect on thumb */
 ::-webkit-scrollbar-thumb:hover {
   background: #0056b3;
 }
