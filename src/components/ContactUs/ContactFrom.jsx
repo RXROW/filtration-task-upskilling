@@ -1,44 +1,44 @@
 import React, { useState } from "react";
-
 const ContactForm = () => {
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-
-  // Handle input changes
+  const [error, setError] = useState("");
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // Handle form submission
+  }; 
   const handleSubmit = async (e) => {
-    console.log({formData})
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    setError("");
+    if (!formData.name || !formData.email || !formData.phone) {
+      setError("All fields are required.");
+      setLoading(false);
+      return;
+    }
 
     try {
-      const response = await fetch("https://your-backend-api.com/contact", {
+      const response = await fetch("https://reqres.in/api/users", { // this free api to test this api (http://upskilling-egypt.com:3001/contact) not work 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       if (response.ok) {
-        setMessage("Message sent successfully!");
-        setFormData({ name: "", email: "", phone: "" }); // Clear form
+        const data = await response.json();
+        setMessage(`Success! User ${data.id} added.`);
+        setFormData({ name: "", email: "", phone: "" });  
       } else {
-        setMessage("Failed to send message. Try again.");
+        setError("Failed to send message. Try again.");
       }
     } catch (error) {
-      setMessage("Error sending message. Check your connection.");
+      setError("Error sending message. Check your connection.");
     } finally {
       setLoading(false);
     }
   };
-
   return (
-    <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
+    <form className="flex flex-col space-y-4 p-4 border rounded-lg" onSubmit={handleSubmit}>
       <input
         type="text"
         name="name"
@@ -73,7 +73,8 @@ const ContactForm = () => {
       >
         {loading ? "Sending..." : "Send"}
       </button>
-      {message && <p className="text-center text-sm text-gray-600">{message}</p>}
+      {message && <p className="text-center text-green-600">{message}</p>}
+      {error && <p className="text-center text-red-600">{error}</p>}
     </form>
   );
 };

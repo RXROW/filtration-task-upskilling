@@ -14,7 +14,28 @@
     transform: rotate(360deg);
   }
 }
+/* Width and height */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
 
+/* Track (background) */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+/* Thumb (scrolling part) */
+::-webkit-scrollbar-thumb {
+  background: #007bff;
+  border-radius: 10px;
+}
+
+/* Hover effect on thumb */
+::-webkit-scrollbar-thumb:hover {
+  background: #0056b3;
+}
 .hero-bg {
   background-image: url("./assets/bg-hero.jpg");
   background-size: contain;
@@ -81,8 +102,7 @@
   color: #6495ed;
   position: relative;
 }
-
-/* Pseudo-elements for diagonal lines */
+ 
 .services-title::before,
 .services-title::after {
   content: "";
@@ -103,8 +123,7 @@
   right: 40%;
   transform: rotate(30deg);
 }
-
-/* Additional elements for bottom diagonal lines */
+ 
 .services-title span::before,
 .services-title span::after {
   content: "";
