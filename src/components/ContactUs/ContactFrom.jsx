@@ -1,17 +1,7 @@
 import React, { useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import axios from "axios";
-
-
-const validationSchema = Yup.object({
-  name: Yup.string().required("Name is required."),
-  email: Yup.string().email("Invalid email format").required("Email is required."),
-  phone: Yup.string().matches(
-    /^[0-9]{11}$/,
-    "Phone number must be 11 digits"
-  ).required("Phone number is required."),
-});
+import validationSchema from "../../utils/validationSchema";
+import { submitContactForm } from "../../utils/api";
 
 const ContactForm = () => {
   const [loading, setLoading] = useState(false);
@@ -22,14 +12,9 @@ const ContactForm = () => {
     setLoading(true);
     setMessage("");
     setError("");
-
     try {
-      // I use this api becuase this api (http://upskilling-egypt.com:3001/contact) not work 
-      const response = await axios.post("https://reqres.in/api/users", values, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      setMessage(`Success! User ${response.data.id} added.`);
+      const response = await submitContactForm(values);
+      setMessage(`Success! ${response.message}`);
       resetForm();
     } catch (err) {
       setError("Failed to send message. Please try again.");
